@@ -168,8 +168,8 @@
 			android:theme="@style/LightTheme"
         	android:label="@string/filePickerTitle"/>
     	
-    	<uses-library android:name="android.test.runner" />
+    	<!--<uses-library android:name="android.test.runner" />-->
     </application>
-	<instrumentation android:name="android.test.InstrumentationTestRunner" android:targetPackage="org.tomdroid"></instrumentation>
+	<!--<instrumentation android:name="android.test.InstrumentationTestRunner" android:targetPackage="org.tomdroid"></instrumentation>-->
 
 </manifest> 

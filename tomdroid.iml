@@ -28,7 +28,7 @@
       <sourceFolder url="file://$MODULE_DIR$/gen" isTestSource="false" generated="true" />
     </content>
     <orderEntry type="jdk" jdkName="Android API 19 Platform" jdkType="Android SDK" />
-    <orderEntry type="library" name="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK/com.kaloer.filepicker.MainActivity" level="application" />
+    <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module-library" exported="">
       <library name="signpost-core-1.2.1.2.jar">
         <CLASSES>
@@ -56,8 +56,6 @@
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" exported="" name="com.android.ide.eclipse.adt.DEPENDENCIES" level="application" />
   </component>
 </module>
 
