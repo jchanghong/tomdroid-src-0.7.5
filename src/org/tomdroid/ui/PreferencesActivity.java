@@ -204,7 +204,7 @@ public class PreferencesActivity extends ActionBarPreferenceActivity {
 
                         TLog.d(TAG, "Changed Folder to: " + path.toString());
 
-                        Tomdroid.NOTES_PATH = path.toString();
+//                        Tomdroid.NOTES_PATH = path.toString();
                         sdLocation.setSummary(Tomdroid.NOTES_PATH);
 
                         // if sync service is sd-card -> needsLocation == true, then reset sync values
@@ -336,7 +336,7 @@ public class PreferencesActivity extends ActionBarPreferenceActivity {
             syncService.setValue(defaultService);
 
         String defaultLocation = (String) Preferences.Key.SD_LOCATION.getDefault();
-        Tomdroid.NOTES_PATH = defaultLocation;
+//        Tomdroid.NOTES_PATH = defaultLocation;
         sdLocation.setDefaultValue(defaultLocation);
         if (sdLocation.getText() == null)
             sdLocation.setText(defaultLocation);
@@ -378,21 +378,21 @@ public class PreferencesActivity extends ActionBarPreferenceActivity {
     private void auth() {
         authorization = Frontia.getAuthorization();
 //        authorization.clearAllAuthorizationInfos();
-        boolean isauth = authorization.isAuthorizationReady(FrontiaAuthorization.MediaType.BAIDU.toString());
-        if (isauth) {
-            authorization.getUserInfo(FrontiaAuthorization.MediaType.QQFRIEND.toString(), new FrontiaAuthorizationListener.UserInfoListener() {
-                @Override
-                public void onSuccess(FrontiaUser.FrontiaUserDetail frontiaUserDetail) {
-                    Frontia.setCurrentAccount(frontiaUserDetail);
-                    System.out.println(frontiaUserDetail.getAccessToken()+"AAAAAAA");
-                }
-
-                @Override
-                public void onFailure(int i, String s) {
-
-                }
-            });
-        } else {
+//        boolean isauth = authorization.isAuthorizationReady(FrontiaAuthorization.MediaType.BAIDU.toString());
+//        if (isauth) {
+//            authorization.getUserInfo(FrontiaAuthorization.MediaType.QQFRIEND.toString(), new FrontiaAuthorizationListener.UserInfoListener() {
+//                @Override
+//                public void onSuccess(FrontiaUser.FrontiaUserDetail frontiaUserDetail) {
+//                    Frontia.setCurrentAccount(frontiaUserDetail);
+//                    System.out.println(frontiaUserDetail.getAccessToken()+"AAAAAAA");
+//                }
+//
+//                @Override
+//                public void onFailure(int i, String s) {
+//
+//                }
+//            });
+//        } else {
             ArrayList<String> scope = new ArrayList<String>();
             scope.add("basic");
             scope.add("netdisk");
@@ -417,7 +417,7 @@ public class PreferencesActivity extends ActionBarPreferenceActivity {
                 }
 
             });
-        }
+//        }
 
         return;
     }

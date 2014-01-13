@@ -183,14 +183,14 @@ public class Tomdroid extends ActionBarListActivity {
         setContentView(main);
 		
 		// get the Path to the notes-folder from Preferences
-        if (Preferences.getString(Preferences.Key.SD_LOCATION).startsWith("/")) {
-        	NOTES_PATH = Preferences.getString(Preferences.Key.SD_LOCATION);
-        } else {
-        	NOTES_PATH = Environment.getExternalStorageDirectory()
-				+ "/" + Preferences.getString(Preferences.Key.SD_LOCATION) + "/";
-        }
-		
-
+//        if (Preferences.getString(Preferences.Key.SD_LOCATION).startsWith("/")) {
+//        	NOTES_PATH = Preferences.getString(Preferences.Key.SD_LOCATION);
+//        } else {
+//        	NOTES_PATH = Environment.getExternalStorageDirectory()
+//				+ "/" + Preferences.getString(Preferences.Key.SD_LOCATION) + "/";
+//        }
+        NOTES_PATH = getFilesDir().getPath();
+         FileUtil.ll(NOTES_PATH);
 		// generate the http header we want to send on syncing
 		getPackageManager();
 		try {

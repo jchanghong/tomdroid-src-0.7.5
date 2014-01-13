@@ -106,21 +106,21 @@ public class FileUtil {
 
         }
         localfile.clear();
-        FilenameFilter filenameFilter = new FilenameFilter() {
-            @Override
-            public boolean accept(File dir, String filename) {
 
-                return false;
-            }
-        };
 
         File file = new File(Tomdroid.NOTES_PATH);
-        for (String a : file.list(filenameFilter)) {
-            localfile.add(a);
+
+        for (String a : file.list(new NotesFilter())) {
+            localfile.add(pathtoname(a));
+
         }
 
     }
-
+   static private class NotesFilter implements FilenameFilter {
+        public boolean accept(File dir, String name) {
+            return (name.endsWith(".note"));
+        }
+    }
     public static void sync() {
         Runnable runnable = new Runnable() {
             @Override
@@ -134,10 +134,11 @@ public class FileUtil {
                         for (FrontiaFile a : frontiaFiles) {
                             remotefile.add(pathtoname(a.getRemotePath()));
                         }
-                        dosync();
-                        ll("end sysc ");
                         ll("locallist :" + localfile.size());
                         ll("relist:" + remotefile.size());
+                        dosync();
+                        ll("end sysc ");
+
                     }
 
                     @Override
