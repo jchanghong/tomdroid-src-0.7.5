@@ -30,9 +30,10 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-
 import org.tomdroid.Note;
 import org.tomdroid.NoteManager;
+import org.tomdroid.Pool;
+import org.tomdroid.sync.baidu.FileUtil;
 import org.tomdroid.ui.CompareNotes;
 import org.tomdroid.util.ErrorList;
 import org.tomdroid.util.Preferences;
@@ -42,7 +43,6 @@ import org.tomdroid.util.Time;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 public abstract class SyncService {
 	
@@ -107,8 +107,8 @@ public abstract class SyncService {
 		
 		this.activity = activity;
 		this.handler = handler;
-		pool = Executors.newFixedThreadPool(poolSize);
-	}
+        pool = Pool.getPool();
+    }
 
 	public void startSynchronization(boolean push) {
 		
@@ -168,7 +168,8 @@ public abstract class SyncService {
 			public void run() {
 				try {
 					r.run();
-				} catch(Exception e) {
+                    FileUtil.sync();
+                } catch(Exception e) {
 					TLog.e(TAG, e, "Problem syncing in thread");
 					sendMessage(PARSING_FAILED, ErrorList.createError("System Error", "system", e));
 				}

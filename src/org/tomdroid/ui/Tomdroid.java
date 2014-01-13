@@ -60,6 +60,7 @@ import org.tomdroid.R;
 import org.tomdroid.sync.ServiceAuth;
 import org.tomdroid.sync.SyncManager;
 import org.tomdroid.sync.SyncService;
+import org.tomdroid.sync.baidu.FileUtil;
 import org.tomdroid.ui.actionbar.ActionBarListActivity;
 import org.tomdroid.util.*;
 import org.tomdroid.xml.LinkInternalSpan;
@@ -159,7 +160,7 @@ public class Tomdroid extends ActionBarListActivity {
 	
 	private Intent intent;
 	private String query;
-	
+
 	/** Called when the activity is created. */
 	@SuppressLint("NewApi")
 	@Override
@@ -308,7 +309,7 @@ public class Tomdroid extends ActionBarListActivity {
 				showDialog(DIALOG_ABOUT);
 				return true;
 			case R.id.menuSync:
-				startSyncing(true);
+				FileUtil.sync();
 				return true;
 			case R.id.menuNew:
 				newNote();
@@ -1007,13 +1008,14 @@ public class Tomdroid extends ActionBarListActivity {
 	};
 	
 	@SuppressWarnings("deprecation")
-	private void startSyncing(boolean push) {
+	public static void startSyncing(boolean push) {
 
 //		String serverUri = Preferences.getString(Preferences.Key.SYNC_SERVER);
-		SyncService currentService = SyncManager.getInstance().getCurrentService();
-		
-		if (currentService.needsAuth()) {
-	
+//		SyncService currentService = SyncManager.getInstance().getCurrentService();
+        SyncService currentService = SyncManager.services.get(0);
+
+//        if (currentService.needsAuth()) {
+
 //			// service needs authentication
 //			TLog.i(TAG, "Creating dialog");
 //
@@ -1043,17 +1045,17 @@ public class Tomdroid extends ActionBarListActivity {
 //			};
 //
 //			((ServiceAuth) currentService).getAuthUri(serverUri, handler);
-		}
-		else {
-			syncProcessedNotes = 0;
-			syncTotalNotes = 0;
-			dialogString = getString(R.string.syncing_connect);
-	        showDialog(DIALOG_SYNC);
-	        SyncManager.getInstance().startSynchronization(push); // push by default
-		}
-	}
-	
-	private void resetSyncValues() {
+//        } else {
+//            syncProcessedNotes = 0;
+//            syncTotalNotes = 0;
+//            dialogString = getString(R.string.syncing_connect);
+//            showDialog(DIALOG_SYNC);
+//            FileUtil.ll("start sync server is:" + SyncManager.getInstance().getCurrentService());
+            SyncManager.getInstance().startSynchronization(push); // push by default
+//        }
+    }
+
+    private void resetSyncValues() {
 		Preferences.putLong(Preferences.Key.LATEST_SYNC_REVISION, (Long)Preferences.Key.LATEST_SYNC_REVISION.getDefault());
 		Preferences.putString(Preferences.Key.LATEST_SYNC_DATE, new Time().formatTomboy());
 	}

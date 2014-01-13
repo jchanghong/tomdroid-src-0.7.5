@@ -102,8 +102,10 @@ public class EditNote extends ActionBarActivity {
 	// remember if we are writing a BulletSpan at the moment
 	private boolean inBulletSpan = false;
 	private int listLevel = 1;
-	
-	// TODO extract methods in here
+
+
+
+    // TODO extract methods in here
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -482,9 +484,11 @@ public class EditNote extends ActionBarActivity {
 
 		Toast.makeText(this, getString(R.string.messageNoteSaved), Toast.LENGTH_SHORT).show();
 		TLog.v(TAG, "note saved");
+        SyncManager.getInstance().startSynchronization(true); // push by default
 		//showNote(false);	// redraw the note, do not show XML
 		//finish();
 	}
+
 
 	private void discardNoteContent() {
 		new AlertDialog.Builder(EditNote.this)

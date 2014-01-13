@@ -1,9 +1,11 @@
 package org.tomdroid.sync.baidu;
 
+import android.util.Log;
 import com.baidu.frontia.Frontia;
 import com.baidu.frontia.FrontiaFile;
 import com.baidu.frontia.api.FrontiaStorage;
 import com.baidu.frontia.api.FrontiaStorageListener;
+import org.tomdroid.Pool;
 import org.tomdroid.ui.Tomdroid;
 
 import java.io.File;
@@ -15,171 +17,139 @@ import java.util.List;
  * Created by changhong on 14-1-13.
  */
 public class FileUtil {
+    public static String tag = "AAAAAAAAAA";
+    public static FrontiaFile mfile;
+
+    static {
+        mfile = new FrontiaFile();
+    }
+
+
+    public static void ll(String info) {
+        Log.i(tag, info);
+    }
+
     public static FrontiaStorage storage = Frontia.getStorage();
     public static ArrayList<String> remotefile = new ArrayList<String>();
     public static ArrayList<String> localfile = new ArrayList<String>();
 
-    public static FrontiaFile getfile(String name) {
-
-        FrontiaFile res = new FrontiaFile();
-        res.setIsDir(false);
-        res.setRemotePath("path" + Frontia.getCurrentAccount().getId() + "/" + name);
+    private static void setFile(String name) {
+        ll("in setFile");
+//        mfile.setIsDir(false);
+        mfile.setRemotePath("/path" + Frontia.getCurrentAccount().getId() + "/" + name);
         if (Tomdroid.NOTES_PATH.endsWith("/")) {
-            res.setNativePath(Tomdroid.NOTES_PATH + name);
+            mfile.setNativePath(Tomdroid.NOTES_PATH + name);
         } else {
 
-            res.setNativePath(Tomdroid.NOTES_PATH + "/" + name);
+            mfile.setNativePath(Tomdroid.NOTES_PATH + "/" + name);
         }
-        return res;
+
     }
 
-    public static void pushall() {
-        File file = new File(Tomdroid.NOTES_PATH);
-        if (file.isFile()) {
-            return;
-        }
-        FilenameFilter filenameFilter = new FilenameFilter() {
-            @Override
-            public boolean accept(File dir, String filename) {
-                return filename.endsWith(".node");
-            }
-        };
+    private static void pushall() {
+        ll("pushall");
+        getlocallist();
 
-        String[] locals = file.list(filenameFilter);
-
-        for (String a : locals) {
+        for (String a : localfile) {
             push(a);
 
         }
 
     }
 
-    public static void push(String filename) {
-        FrontiaFile file = getfile(filename);
-        delete(file);
-        storage.uploadFile(file, new FrontiaStorageListener.FileProgressListener() {
-                    @Override
-                    public void onProgress(String s, long l, long l2) {
+    private static void push(final String filename) {
 
-                    }
-                }, new FrontiaStorageListener.FileTransferListener() {
-                    @Override
-                    public void onSuccess(String s, String s2) {
+        setFile(filename);
+        delete(mfile);
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
 
-                    }
-
-                    @Override
-                    public void onFailure(String s, int i, String s2) {
-
-                    }
-                }
+        storage.uploadFile(mfile, fileProgressListener, fileTransferListener
         );
     }
 
-    public static void pushnodelete(String filename) {
-        FrontiaFile file = getfile(filename);
-        storage.uploadFile(file, new FrontiaStorageListener.FileProgressListener() {
-                    @Override
-                    public void onProgress(String s, long l, long l2) {
 
-                    }
-                }, new FrontiaStorageListener.FileTransferListener() {
-                    @Override
-                    public void onSuccess(String s, String s2) {
-
-                    }
-
-                    @Override
-                    public void onFailure(String s, int i, String s2) {
-
-                    }
-                }
+    private static void pushnodelete(String filename) {
+        setFile(filename);
+        storage.uploadFile(mfile, fileProgressListener, fileTransferListener
         );
     }
 
-    public static void delete(FrontiaFile filename) {
-        storage.deleteFile(filename, new FrontiaStorageListener.FileOperationListener() {
+    private static void delete(FrontiaFile filename) {
+        storage.deleteFile(filename, fileOperationListener);
+    }
+
+    private static void pull(String remofilename) {
+        setFile(remofilename);
+        storage.downloadFile(mfile, fileProgressListener, new FrontiaStorageListener.FileTransferListener() {
             @Override
-            public void onSuccess(String s) {
-
+            public void onSuccess(String s, String s2) {
+                ll("download " + s + ":" + s2);
             }
 
             @Override
             public void onFailure(String s, int i, String s2) {
-
+                ll(s2);
             }
-        });
-    }
-
-    public static void pull(String remofilename) {
-        FrontiaFile file = getfile(remofilename);
-        storage.downloadFile(file, new FrontiaStorageListener.FileProgressListener() {
-                    @Override
-                    public void onProgress(String s, long l, long l2) {
-
-                    }
-                }, new FrontiaStorageListener.FileTransferListener() {
-                    @Override
-                    public void onSuccess(String s, String s2) {
-
-                    }
-
-                    @Override
-                    public void onFailure(String s, int i, String s2) {
-
-                    }
-                }
+        }
         );
     }
 
-    public static void getremotelist() {
-        remotefile.clear();
-        storage.listFiles(new FrontiaStorageListener.FileListListener() {
-            @Override
-            public void onSuccess(List<FrontiaFile> frontiaFiles) {
-                for (FrontiaFile a : frontiaFiles) {
-                    remotefile.add(a.getRemotePath());
-                }
-            }
 
-            @Override
-            public void onFailure(int i, String s) {
+    private static void getlocallist() {
+        if (Tomdroid.NOTES_PATH.endsWith("/")) {
+            Tomdroid.NOTES_PATH = Tomdroid.NOTES_PATH.substring(0, Tomdroid.NOTES_PATH.length() - 1);
+//            ll(Tomdroid.NOTES_PATH);
 
-            }
-        });
-    }
-
-    public static void getlocallist() {
+        }
         localfile.clear();
-        File file = new File(Tomdroid.NOTES_PATH);
-        for (String a : file.list(new FilenameFilter() {
+        FilenameFilter filenameFilter = new FilenameFilter() {
             @Override
             public boolean accept(File dir, String filename) {
-                return filename.endsWith(".node");
+
+                return false;
             }
-        })) {
+        };
+
+        File file = new File(Tomdroid.NOTES_PATH);
+        for (String a : file.list(filenameFilter)) {
             localfile.add(a);
         }
 
     }
 
     public static void sync() {
-        getlocallist();
-        remotefile.clear();
-        storage.listFiles(new FrontiaStorageListener.FileListListener() {
+        Runnable runnable = new Runnable() {
             @Override
-            public void onSuccess(List<FrontiaFile> frontiaFiles) {
-                for (FrontiaFile a : frontiaFiles) {
-                    remotefile.add(pathtoname(a.getRemotePath()));
-                }
-                dosync();
-            }
+            public void run() {
+                ll("in sync");
+                getlocallist();
+                remotefile.clear();
+                storage.listFiles(new FrontiaStorageListener.FileListListener() {
+                    @Override
+                    public void onSuccess(List<FrontiaFile> frontiaFiles) {
+                        for (FrontiaFile a : frontiaFiles) {
+                            remotefile.add(pathtoname(a.getRemotePath()));
+                        }
+                        dosync();
+                        ll("end sysc ");
+                        ll("locallist :" + localfile.size());
+                        ll("relist:" + remotefile.size());
+                    }
 
-            @Override
-            public void onFailure(int i, String s) {
+                    @Override
+                    public void onFailure(int i, String s) {
+                        ll(s);
+                    }
+                });
 
             }
-        });
+        };
+        Pool.exe(runnable);
+
     }
 
     private static void dosync() {
@@ -199,13 +169,44 @@ public class FileUtil {
 
             }
         }
-
     }
 
     private static String pathtoname(String path) {
-        int in = path.lastIndexOf("\")");
-        return path.substring(in, path.length() - 1);
+        int in = path.lastIndexOf("/");
+        if (in == -1) {
+            return path;
+        }
+        return path.substring(in + 1, path.length());
 
     }
+
+    private static FrontiaStorageListener.FileOperationListener fileOperationListener = new FrontiaStorageListener.FileOperationListener() {
+        @Override
+        public void onSuccess(String s) {
+            ll(s + "  succuss");
+        }
+
+        @Override
+        public void onFailure(String s, int i, String s2) {
+            ll(s2);
+        }
+    };
+    static FrontiaStorageListener.FileProgressListener fileProgressListener = new FrontiaStorageListener.FileProgressListener() {
+        @Override
+        public void onProgress(String s, long l, long l2) {
+
+        }
+    };
+    static FrontiaStorageListener.FileTransferListener fileTransferListener = new FrontiaStorageListener.FileTransferListener() {
+        @Override
+        public void onSuccess(String s, String s2) {
+            ll("succuss s:" + s + "s2:" + s2);
+        }
+
+        @Override
+        public void onFailure(String s, int i, String s2) {
+
+        }
+    };
 
 }

@@ -25,6 +25,7 @@ package org.tomdroid.sync;
 import android.app.Activity;
 import android.os.Handler;
 import org.tomdroid.sync.baidu.BDyunSyncService;
+import org.tomdroid.sync.baidu.FileUtil;
 import org.tomdroid.sync.sd.SdCardSyncService;
 import org.tomdroid.util.Preferences;
 
@@ -32,7 +33,7 @@ import java.util.ArrayList;
 
 public class SyncManager {
 	
-	private static ArrayList<SyncService> services = new ArrayList<SyncService>();
+	public static ArrayList<SyncService> services = new ArrayList<SyncService>();
 	private SyncService service;
 	
 	public SyncManager() {
@@ -56,13 +57,13 @@ public class SyncManager {
 	}
 	
 	public void startSynchronization(boolean push) {
-		
-		service = getCurrentService();
-		service.setCancelled(false);
-		service.startSynchronization(push);
-	}
-	
-	public SyncService getCurrentService() {
+        FileUtil.ll("in start sync" + getCurrentService().getName());
+        service = services.get(0);
+        service.setCancelled(false);
+        service.startSynchronization(push);
+    }
+
+    public SyncService getCurrentService() {
 		String serviceName = Preferences.getString(Preferences.Key.SYNC_SERVICE);
 		return getService(serviceName);
 	}
