@@ -1,175 +1,206 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-      package="org.tomdroid"
-      android:versionName="0.7.5" android:versionCode="14">
+          package="org.tomdroid"
+          android:versionName="0.7.5" android:versionCode="14">
 
-	<uses-sdk android:minSdkVersion="4"
-	          android:targetSdkVersion="11" />
-          
+    <uses-sdk android:minSdkVersion="4"
+              android:targetSdkVersion="11"/>
+
     <supports-screens android:resizeable="true"
                       android:smallScreens="true"
                       android:normalScreens="true"
                       android:largeScreens="true"
                       android:xlargeScreens="true"
                       android:anyDensity="true"/>
-    
-    <uses-permission android:name="android.permission.INTERNET" />
-	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="com.android.launcher.permission.INSTALL_SHORTCUT" />
-    <uses-permission android:name="com.android.launcher.permission.UNINSTALL_SHORTCUT" />
-    	       
-	<application
-		android:icon="@drawable/ic_launcher"
-		android:label="@string/app_name"
-		android:theme="@android:style/Theme.Light.NoTitleBar"
-	>
 
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="com.android.launcher.permission.INSTALL_SHORTCUT"/>
+    <uses-permission android:name="com.android.launcher.permission.UNINSTALL_SHORTCUT"/>
+    <!-- Frontia框架的公共权限 -->
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_DOWNLOAD_MANAGER"/>
+    <uses-permission android:name="android.permission.DOWNLOAD_WITHOUT_NOTIFICATION"/>
+
+    <!-- FrontiaPush 和FrontiaStatistics 需要的权限 -->
+    <uses-permission android:name="android.permission.WRITE_SETTINGS"></uses-permission>
+    <application
+            android:allowBackup="true"
+            android:icon="@drawable/ic_launcher"
+            android:label="@string/app_name"
+            android:theme="@android:style/Theme.Light.NoTitleBar"
+            android:name="com.baidu.frontia.FrontiaApplication"
+            >
+        <!-- 您从百度网站获取的APP KEY -->
+        <meta-data android:name="BaiduMobAd_STAT_ID" android:value="bfabdb7beb"/>
+        <!-- abcd1234 -->
+        <!-- 渠道商编号 -->
+        <meta-data android:name="BaiduMobAd_CHANNEL" android:value="Baidu Market"/>
+
+        <!-- 是否开启错误日志统计，默认为false -->
+        <meta-data android:name="BaiduMobAd_EXCEPTION_LOG" android:value="true"/>
+        <!-- 日志发送策略，可选值：APP_START、ONCE_A_DAY、SET_TIME_INTERVAL，默认为APP_START -->
+        <meta-data android:name="BaiduMobAd_SEND_STRATEGY" android:value="APP_START"/>
+        <!-- 日志发送策略 为SET_TIME_INTERVAL时，需设定时间间隔(取消下行注释)。取值为1-24的整数，默认为1 -->
+        <!-- <meta-data android:name="BaiduMobAd_TIME_INTERVAL" android:value="2" />  -->
+        <!-- 日志仅在wifi网络下发送，默认为false -->
+        <meta-data android:name="BaiduMobAd_ONLY_WIFI" android:value="false"/>
+        <!-- 是否获取基站位置信息 ,默认为true-->
+        <meta-data android:name="BaiduMobAd_CELL_LOCATION" android:value="true"/>
+        <!-- 是否获取GPS位置信息，默认为true -->
+        <meta-data android:name="BaiduMobAd_GPS_LOCATION" android:value="true"/>
+        <!-- 是否获取WIFI位置信息，默认为true -->
+        <meta-data android:name="BaiduMobAd_WIFI_LOCATION" android:value="true"/>
         <activity android:label="@string/app_name"
-			android:theme="@style/LightTheme"
-			android:name=".ui.Tomdroid"
-			android:configChanges="orientation|screenSize"
-			>
+                  android:theme="@style/LightTheme"
+                  android:name=".ui.Tomdroid"
+                  android:configChanges="orientation|screenSize"
+                >
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
+                <action android:name="android.intent.action.MAIN"/>
+                <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
             <intent-filter>
-        		<action android:name="android.intent.action.VIEW" />
-        		<category android:name="android.intent.category.DEFAULT" />
-        		<category android:name="android.intent.category.BROWSABLE" />
-        		<data android:scheme="tomdroid" android:host="sync"/>
-        	</intent-filter>
-        	<!-- enable the search dialog to send searches to SearchableActivity -->
-        	<meta-data android:name="android.app.default_searchable"
-                   android:value=".ui.Tomdroid" />
-			<intent-filter>
-				<action android:name="android.intent.action.SEARCH" />
-			</intent-filter>
-			<meta-data	android:name="android.app.searchable"
-						android:resource="@xml/searchable"/>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data android:scheme="tomdroid" android:host="sync"/>
+            </intent-filter>
+            <!-- enable the search dialog to send searches to SearchableActivity -->
+            <meta-data android:name="android.app.default_searchable"
+                       android:value=".ui.Tomdroid"/>
+            <intent-filter>
+                <action android:name="android.intent.action.SEARCH"/>
+            </intent-filter>
+            <meta-data android:name="android.app.searchable"
+                       android:resource="@xml/searchable"/>
         </activity>
-    
-		<activity android:name=".ui.ViewNote"
-			android:theme="@style/LightTheme"
-			android:label="@string/view_title"
-			>
-			<intent-filter>
-				<action android:name="android.intent.action.VIEW" />
-				<category android:name="android.intent.category.DEFAULT" />
-				<category android:name="android.intent.category.BROWSABLE" />
-				<data android:mimeType="vnd.android.cursor.item/vnd.tomdroid.note" />
-			</intent-filter>
-		</activity>
-		<activity android:name=".ui.EditNote"
-			android:configChanges="keyboardHidden|orientation|screenSize"
-			android:theme="@style/LightTheme"
-			android:label="@string/edit_title"
-		    >
-		</activity>
-		<activity android:name=".util.Receive"
-		    android:theme="@style/LightTheme"
-		    >
-		    <!-- To receive data from other apps via share -->
-        	<intent-filter>
-        		<action android:name="android.intent.action.SEND" />
-        		<category android:name="android.intent.category.DEFAULT" />
-        		<data android:mimeType="text/plain" />
-    		</intent-filter>
-			<!-- To receive note files from file browser (open all .note files) -->
-			<intent-filter>
-				<action android:name="android.intent.action.VIEW" />
-				<category android:name="android.intent.category.DEFAULT" />
-		        <category android:name="android.intent.category.BROWSABLE" />
-				<data android:scheme="file" />
-				<data android:host="*" />
-				<data android:port="*" />
-  				<data android:mimeType="*/*" />
-				<data android:pathPattern=".*\\.note" />
-			</intent-filter>
-			<intent-filter>
-				<action android:name="android.intent.action.VIEW" />
-				<category android:name="android.intent.category.DEFAULT" />
-		        <category android:name="android.intent.category.BROWSABLE" />
-				<data android:scheme="content" />
-				<data android:host="*" />
-				<data android:port="*" />
-  				<data android:mimeType="*/*" />
-				<data android:pathPattern=".*\\.note" />
-			</intent-filter>
-			<!-- To open all text files (open all text files) -->
-			<intent-filter>
-				<action android:name="android.intent.action.VIEW" />
-				<category android:name="android.intent.category.DEFAULT" />
-		        <category android:name="android.intent.category.BROWSABLE" />
-				<data android:scheme="content" />
-				<data android:host="*" />
-				<data android:port="*" />
-				<data android:pathPattern=".*" />
-  				<data android:mimeType="text/*" />
-			</intent-filter>
-			<intent-filter>
-				<action android:name="android.intent.action.VIEW" />
-				<category android:name="android.intent.category.DEFAULT" />
-		        <category android:name="android.intent.category.BROWSABLE" />
-				<data android:scheme="file" />
-				<data android:host="*" />
-				<data android:port="*" />
-				<data android:pathPattern=".*" />
-  				<data android:mimeType="text/*" />
-			</intent-filter>
-			<!-- To receive note files from mail client (open with application/note mimetype) -->
-			<intent-filter>
-				<action android:name="android.intent.action.VIEW" />
-				<category android:name="android.intent.category.DEFAULT" />
-		        <category android:name="android.intent.category.BROWSABLE" />
-				<data android:scheme="file" />
-				<data android:host="*" />
-				<data android:port="*" />
-  				<data android:mimeType="application/note" />
-			</intent-filter>
-			<intent-filter>
-				<action android:name="android.intent.action.VIEW" />
-				<category android:name="android.intent.category.DEFAULT" />
-		        <category android:name="android.intent.category.BROWSABLE" />
-				<data android:scheme="content" />
-				<data android:host="*" />
-				<data android:port="*" />
-  				<data android:mimeType="application/note" />
-			</intent-filter>
-		</activity>
-		<provider	
-		    android:name=".util.SearchSuggestionProvider"
-			android:authorities="org.tomdroid.util.SearchSuggestionProvider"
-			/>
-		
-		<provider android:name="NoteProvider"
-            android:authorities="org.tomdroid.notes"
-        />
-        <activity android:name=".ui.PreferencesActivity" 
-        	android:theme="@style/LightTheme"
- 			android:label="@string/pref_title"
- 			android:configChanges="orientation|screenSize"
- 			>
-    	</activity>
-        <activity android:name=".ui.ShortcutActivity" 
-			android:theme="@style/LightTheme"
-            android:label="@string/shortcut_menu_item_caption">
+
+        <activity android:name=".ui.ViewNote"
+                  android:theme="@style/LightTheme"
+                  android:label="@string/view_title"
+                >
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data android:mimeType="vnd.android.cursor.item/vnd.tomdroid.note"/>
+            </intent-filter>
+        </activity>
+        <activity android:name=".ui.EditNote"
+                  android:configChanges="keyboardHidden|orientation|screenSize"
+                  android:theme="@style/LightTheme"
+                  android:label="@string/edit_title"
+                >
+        </activity>
+        <activity android:name=".util.Receive"
+                  android:theme="@style/LightTheme"
+                >
+            <!-- To receive data from other apps via share -->
+            <intent-filter>
+                <action android:name="android.intent.action.SEND"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <data android:mimeType="text/plain"/>
+            </intent-filter>
+            <!-- To receive note files from file browser (open all .note files) -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data android:scheme="file"/>
+                <data android:host="*"/>
+                <data android:port="*"/>
+                <data android:mimeType="*/*"/>
+                <data android:pathPattern=".*\\.note"/>
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data android:scheme="content"/>
+                <data android:host="*"/>
+                <data android:port="*"/>
+                <data android:mimeType="*/*"/>
+                <data android:pathPattern=".*\\.note"/>
+            </intent-filter>
+            <!-- To open all text files (open all text files) -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data android:scheme="content"/>
+                <data android:host="*"/>
+                <data android:port="*"/>
+                <data android:pathPattern=".*"/>
+                <data android:mimeType="text/*"/>
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data android:scheme="file"/>
+                <data android:host="*"/>
+                <data android:port="*"/>
+                <data android:pathPattern=".*"/>
+                <data android:mimeType="text/*"/>
+            </intent-filter>
+            <!-- To receive note files from mail client (open with application/note mimetype) -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data android:scheme="file"/>
+                <data android:host="*"/>
+                <data android:port="*"/>
+                <data android:mimeType="application/note"/>
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data android:scheme="content"/>
+                <data android:host="*"/>
+                <data android:port="*"/>
+                <data android:mimeType="application/note"/>
+            </intent-filter>
+        </activity>
+        <provider
+                android:name=".util.SearchSuggestionProvider"
+                android:authorities="org.tomdroid.util.SearchSuggestionProvider"
+                />
+
+        <provider android:name="NoteProvider"
+                  android:authorities="org.tomdroid.notes"
+                />
+        <activity android:name=".ui.PreferencesActivity"
+                  android:theme="@style/LightTheme"
+                  android:label="@string/pref_title"
+                  android:configChanges="orientation|screenSize"
+                >
+        </activity>
+        <activity android:name=".ui.ShortcutActivity"
+                  android:theme="@style/LightTheme"
+                  android:label="@string/shortcut_menu_item_caption">
             <intent-filter>
                 <action android:name="android.intent.action.CREATE_SHORTCUT"/>
                 <category android:name="android.intent.category.DEFAULT"/>
             </intent-filter>
         </activity>
-    	<activity android:name=".ui.CompareNotes"  
-			android:theme="@style/LightTheme"
-        	android:label="@string/app_name">  
-		</activity>
-		  
+        <activity android:name=".ui.CompareNotes"
+                  android:theme="@style/LightTheme"
+                  android:label="@string/app_name">
+        </activity>
+
         <activity android:name=".ui.FilePickerActivity"
-			android:theme="@style/LightTheme"
-        	android:label="@string/filePickerTitle"/>
-    	
-    	<!--<uses-library android:name="android.test.runner" />-->
+                  android:theme="@style/LightTheme"
+                  android:label="@string/filePickerTitle"/>
+
+        <!--<uses-library android:name="android.test.runner" />-->
     </application>
-	<!--<instrumentation android:name="android.test.InstrumentationTestRunner" android:targetPackage="org.tomdroid"></instrumentation>-->
+    <!--<instrumentation android:name="android.test.InstrumentationTestRunner" android:targetPackage="org.tomdroid"></instrumentation>-->
 
 </manifest> 

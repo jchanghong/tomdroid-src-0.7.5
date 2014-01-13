@@ -24,11 +24,24 @@
  */
 package org.tomdroid.ui;
 
-import java.util.Arrays;
-import java.util.UUID;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
+import android.app.Activity;
+import android.content.ContentValues;
+import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.net.Uri;
+import android.os.Bundle;
+import android.text.Html;
+import android.text.TextUtils;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.ToggleButton;
+import com.baidu.mobstat.StatService;
+import difflib.Delta;
+import difflib.DiffUtils;
+import difflib.Patch;
 import org.tomdroid.Note;
 import org.tomdroid.NoteManager;
 import org.tomdroid.R;
@@ -38,25 +51,12 @@ import org.tomdroid.util.Preferences;
 import org.tomdroid.util.TLog;
 import org.tomdroid.util.Time;
 
-import difflib.Delta;
-import difflib.DiffUtils;
-import difflib.Patch;
-import android.app.Activity;	
-import android.content.ContentValues;
-import android.content.Intent;	
-import android.graphics.Color;
-import android.graphics.Paint;
-import android.net.Uri;
-import android.os.Bundle;	
-import android.text.Html;
-import android.text.TextUtils;
-import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.TextView;
-import android.widget.ToggleButton;
-	
-public class CompareNotes extends ActionBarActivity {	
+import java.util.Arrays;
+import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+public  class CompareNotes extends ActionBarActivity {
 	private static final String TAG = "SyncDialog";
 	
 	private Note localNote;
@@ -370,11 +370,18 @@ public class CompareNotes extends ActionBarActivity {
 			TLog.i(TAG, "Android killed the SyncService while in background. We will dismiss the compare view now.");
 			finish();
 		}
-		
-		super.onResume();
+        StatService.onResume(this);
+        super.onResume();
 	}
 
-	protected void copyNote() {
+    @Override
+    protected void onPause() {
+        super.onPause();
+        StatService.onPause(this);
+
+    }
+
+    protected void copyNote() {
 		
 		TLog.v(TAG, "user chose to create new copy for conflicting note TITLE:{0} GUID:{1}", localNote.getTitle(),localNote.getGuid());
 

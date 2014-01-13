@@ -47,10 +47,10 @@
 				android:key="sync_service" 
 				android:defaultValue="sdcard"/>
 						
-		<EditTextPreference android:key="sync_server"
-				android:title="@string/prefSyncServer"
-				android:shouldDisableView="true"
-				android:singleLine="true"/>
+		<!--<EditTextPreference android:key="sync_server"-->
+				<!--android:title="@string/prefSyncServer"-->
+				<!--android:shouldDisableView="true"-->
+				<!--android:singleLine="true"/>-->
 		<EditTextPreference android:key="sd_location"
 				android:title="@string/prefLocation"
 				android:positiveButtonText="@string/btnOk"

@@ -24,50 +24,18 @@
  */
 package org.tomdroid.ui;
 
-import java.io.StringReader;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
-
-import org.tomdroid.Note;
-import org.tomdroid.NoteManager;
-import org.tomdroid.R;
-import org.tomdroid.sync.SyncManager;
-import org.tomdroid.sync.sd.SdCardSyncService;
-import org.tomdroid.ui.actionbar.ActionBarActivity;
-import org.tomdroid.util.Preferences;
-import org.tomdroid.util.TLog;
-import org.tomdroid.xml.LinkInternalSpan;
-import org.tomdroid.xml.LinkifyPhone;
-import org.tomdroid.xml.NoteContentBuilder;
-import org.tomdroid.xml.NoteContentHandler;
-import org.tomdroid.xml.NoteXMLContentBuilder;
-import org.xml.sax.InputSource;
-
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.DialogInterface.OnClickListener;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.text.Editable;
-import android.text.Selection;
-import android.text.Spannable;
-import android.text.SpannableStringBuilder;
-import android.text.TextWatcher;
-import android.text.style.BackgroundColorSpan;
-import android.text.style.BulletSpan;
-import android.text.style.LeadingMarginSpan;
-import android.text.style.RelativeSizeSpan;
-import android.text.style.StrikethroughSpan;
-import android.text.style.StyleSpan;
-import android.text.style.TypefaceSpan;
+import android.text.*;
+import android.text.style.*;
 import android.text.util.Linkify;
 import android.text.util.Linkify.MatchFilter;
 import android.text.util.Linkify.TransformFilter;
@@ -76,12 +44,24 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnFocusChangeListener;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.SlidingDrawer;
-import android.widget.TextView;
-import android.widget.Toast;
-import android.widget.ToggleButton;
+import android.widget.*;
+import com.baidu.mobstat.StatService;
+import org.tomdroid.Note;
+import org.tomdroid.NoteManager;
+import org.tomdroid.R;
+import org.tomdroid.sync.SyncManager;
+import org.tomdroid.sync.sd.SdCardSyncService;
+import org.tomdroid.ui.actionbar.ActionBarActivity;
+import org.tomdroid.util.Preferences;
+import org.tomdroid.util.TLog;
+import org.tomdroid.xml.*;
+import org.xml.sax.InputSource;
+
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
+import java.io.StringReader;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 // TODO this class is starting to smell
 public class EditNote extends ActionBarActivity {
@@ -225,6 +205,8 @@ public class EditNote extends ActionBarActivity {
         		neverSaved = false;
         }
     	super.onPause();
+        StatService.onPause(this);
+
     }
 
     @Override
@@ -245,8 +227,8 @@ public class EditNote extends ActionBarActivity {
 			TLog.d(TAG, "The Intent's data was null.");
             showNoteNotFoundDialog(uri);
         } else handleNoteUri(uri);
-
-		updateTextAttributes();
+        StatService.onResume(this);
+        updateTextAttributes();
 	}
 	
 	private void updateTextAttributes() {

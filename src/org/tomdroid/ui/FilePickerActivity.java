@@ -19,32 +19,23 @@
 
 package org.tomdroid.ui;
 
+import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.*;
+import android.view.View.OnClickListener;
+import android.widget.*;
+import com.baidu.mobstat.StatService;
+import org.tomdroid.R;
+import org.tomdroid.ui.actionbar.ActionBarListActivity;
+import org.tomdroid.util.Preferences;
+
 import java.io.File;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-
-import org.tomdroid.R;
-import org.tomdroid.ui.actionbar.ActionBarListActivity;
-import org.tomdroid.util.Preferences;
-
-import android.content.Context;
-import android.content.Intent;
-import android.os.Bundle;
-import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.ListView;
-import android.widget.TextView;
 
 public class FilePickerActivity extends ActionBarListActivity {
 	
@@ -143,9 +134,16 @@ public class FilePickerActivity extends ActionBarListActivity {
 	protected void onResume() {
 		refreshFilesList();
 		super.onResume();
-	}
-	
-	/**
+        StatService.onResume(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        StatService.onPause(this);
+    }
+
+    /**
 	 * Updates the list view to the current directory
 	 */
 	protected void refreshFilesList() {

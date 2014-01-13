@@ -46,6 +46,7 @@ import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.baidu.mobstat.StatService;
 import org.tomdroid.Note;
 import org.tomdroid.NoteManager;
 import org.tomdroid.R;
@@ -149,11 +150,17 @@ public class ViewNote extends ActionBarActivity {
                 });
     }
 
-	@Override
+    @Override
+    protected void onPause() {
+        super.onPause();
+        StatService.onPause(this);
+    }
+
+    @Override
 	public void onResume(){
 		TLog.v(TAG, "resume view note");
 		super.onResume();
-
+        StatService.onResume(this);
         if (uri == null) {
 			TLog.d(TAG, "The Intent's data was null.");
             showNoteNotFoundDialog(uri);

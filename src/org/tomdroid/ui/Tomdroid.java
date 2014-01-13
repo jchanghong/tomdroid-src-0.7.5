@@ -25,39 +25,9 @@
  */
 package org.tomdroid.ui;
 
-import java.io.File;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import org.tomdroid.Note;
-import org.tomdroid.NoteManager;
-import org.tomdroid.R;
-import org.tomdroid.sync.ServiceAuth;
-import org.tomdroid.sync.SyncManager;
-import org.tomdroid.sync.SyncService;
-import org.tomdroid.util.ErrorList;
-import org.tomdroid.ui.actionbar.ActionBarListActivity;
-import org.tomdroid.util.FirstNote;
-import org.tomdroid.util.Honeycomb;
-import org.tomdroid.util.NewNote;
-import org.tomdroid.util.NoteViewShortcutsHelper;
-import org.tomdroid.util.Preferences;
-import org.tomdroid.util.Receive;
-import org.tomdroid.util.SearchSuggestionProvider;
-import org.tomdroid.util.Send;
-import org.tomdroid.util.TLog;
-import org.tomdroid.util.Time;
-import org.tomdroid.xml.LinkInternalSpan;
-import org.tomdroid.xml.LinkifyPhone;
-import org.tomdroid.xml.NoteContentBuilder;
-
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
-import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.Dialog;
-import android.app.ProgressDialog;
-import android.app.SearchManager;
+import android.app.*;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
@@ -69,26 +39,36 @@ import android.database.Cursor;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.net.Uri;
-import android.os.Build;
-import android.os.Bundle;
-import android.os.Environment;
-import android.os.Handler;
-import android.os.Message;
+import android.os.*;
 import android.provider.SearchRecentSuggestions;
 import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
 import android.text.util.Linkify;
 import android.text.util.Linkify.MatchFilter;
 import android.text.util.Linkify.TransformFilter;
+import android.util.Log;
 import android.view.*;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.widget.AdapterView.AdapterContextMenuInfo;
-import android.widget.EditText;
-import android.widget.LinearLayout;
-import android.widget.ListAdapter;
-import android.widget.ListView;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.widget.*;
+import com.baidu.frontia.Frontia;
+import com.baidu.mobstat.StatService;
+import org.tomdroid.Conf;
+import org.tomdroid.Note;
+import org.tomdroid.NoteManager;
+import org.tomdroid.R;
+import org.tomdroid.sync.ServiceAuth;
+import org.tomdroid.sync.SyncManager;
+import org.tomdroid.sync.SyncService;
+import org.tomdroid.ui.actionbar.ActionBarListActivity;
+import org.tomdroid.util.*;
+import org.tomdroid.xml.LinkInternalSpan;
+import org.tomdroid.xml.LinkifyPhone;
+import org.tomdroid.xml.NoteContentBuilder;
+
+import java.io.File;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Tomdroid extends ActionBarListActivity {
 
@@ -187,7 +167,13 @@ public class Tomdroid extends ActionBarListActivity {
 		super.onCreate(savedInstanceState);
 
 		Preferences.init(this, CLEAR_PREFERENCES);
-		context = this;
+        Frontia.init(this.getApplication(), Conf.APIKEY);
+        try {
+            Log.i("changhong", "init frontia user is:" + Frontia.getCurrentAccount().getName());
+        } catch (Exception e) {
+            Log.i("changhong", "get userinfo error:\n" + e.toString());
+        }
+        context = this;
 		SyncManager.setActivity(this);
 		SyncManager.setHandler(this.syncMessageHandler);
 		
@@ -453,8 +439,14 @@ public class Tomdroid extends ActionBarListActivity {
     	super.onDestroy();
     }
 
-	public void onResume() {
-		
+    @Override
+    protected void onPause() {
+        super.onPause();
+        StatService.onPause(this);
+    }
+
+    public void onResume() {
+        StatService.onResume(this);
 		// if the SyncService was stopped because Android killed it, we should not show the progress dialog any more
 		if (SyncManager.getInstance().getCurrentService().activity == null) {
 			TLog.i(TAG, "Android killed the SyncService while in background. We will remove the dialog now.");
@@ -1017,40 +1009,40 @@ public class Tomdroid extends ActionBarListActivity {
 	@SuppressWarnings("deprecation")
 	private void startSyncing(boolean push) {
 
-		String serverUri = Preferences.getString(Preferences.Key.SYNC_SERVER);
+//		String serverUri = Preferences.getString(Preferences.Key.SYNC_SERVER);
 		SyncService currentService = SyncManager.getInstance().getCurrentService();
 		
 		if (currentService.needsAuth()) {
 	
-			// service needs authentication
-			TLog.i(TAG, "Creating dialog");
-
-			showDialog(DIALOG_AUTH_PROGRESS);
-	
-			Handler handler = new Handler() {
-	
-				@Override
-				public void handleMessage(Message msg) {
-
-					Uri authorizationUri = (Uri) msg.obj;
-					if (authorizationUri != null) {
-						
-						resetSyncValues();
-	
-						Intent i = new Intent(Intent.ACTION_VIEW, authorizationUri);
-						startActivity(i);
-	
-					} else {
-						// Auth failed, don't update the value
-						showDialog(DIALOG_CONNECT_FAILED);
-					}
-	
-					if (authProgressDialog != null)
-						authProgressDialog.dismiss();
-				}
-			};
-
-			((ServiceAuth) currentService).getAuthUri(serverUri, handler);
+//			// service needs authentication
+//			TLog.i(TAG, "Creating dialog");
+//
+//			showDialog(DIALOG_AUTH_PROGRESS);
+//
+//			Handler handler = new Handler() {
+//
+//				@Override
+//				public void handleMessage(Message msg) {
+//
+//					Uri authorizationUri = (Uri) msg.obj;
+//					if (authorizationUri != null) {
+//
+//						resetSyncValues();
+//
+//						Intent i = new Intent(Intent.ACTION_VIEW, authorizationUri);
+//						startActivity(i);
+//
+//					} else {
+//						// Auth failed, don't update the value
+//						showDialog(DIALOG_CONNECT_FAILED);
+//					}
+//
+//					if (authProgressDialog != null)
+//						authProgressDialog.dismiss();
+//				}
+//			};
+//
+//			((ServiceAuth) currentService).getAuthUri(serverUri, handler);
 		}
 		else {
 			syncProcessedNotes = 0;

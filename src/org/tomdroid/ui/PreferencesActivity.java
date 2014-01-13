@@ -30,33 +30,29 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
-import android.os.Build;
-import android.os.Bundle;
-import android.os.Environment;
-import android.os.Handler;
-import android.os.Message;
+import android.os.*;
 import android.preference.EditTextPreference;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.Preference.OnPreferenceChangeListener;
 import android.preference.Preference.OnPreferenceClickListener;
 import android.provider.SearchRecentSuggestions;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.Window;
-import android.webkit.URLUtil;
 import android.widget.Toast;
-
+import com.baidu.frontia.Frontia;
+import com.baidu.frontia.FrontiaUser;
+import com.baidu.frontia.api.FrontiaAuthorization;
+import com.baidu.frontia.api.FrontiaAuthorizationListener;
+import com.baidu.mobstat.StatService;
 import org.tomdroid.NoteManager;
 import org.tomdroid.R;
 import org.tomdroid.sync.SyncManager;
 import org.tomdroid.sync.SyncService;
 import org.tomdroid.sync.web.OAuthConnection;
 import org.tomdroid.ui.actionbar.ActionBarPreferenceActivity;
-import org.tomdroid.util.FirstNote;
-import org.tomdroid.util.Preferences;
-import org.tomdroid.util.SearchSuggestionProvider;
-import org.tomdroid.util.TLog;
-import org.tomdroid.util.Time;
+import org.tomdroid.util.*;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -95,8 +91,19 @@ public class PreferencesActivity extends ActionBarPreferenceActivity {
 
 	private static ProgressDialog syncProgressDialog;
 
-	
-	@SuppressWarnings("deprecation")
+    @Override
+    protected void onResume() {
+        super.onResume();
+        StatService.onResume(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        StatService.onPause(this);
+    }
+
+    @SuppressWarnings("deprecation")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		if (Build.VERSION.SDK_INT < 11)
@@ -113,7 +120,7 @@ public class PreferencesActivity extends ActionBarPreferenceActivity {
 		// Fill the Preferences fields
 		baseSize = (EditTextPreference)findPreference(Preferences.Key.BASE_TEXT_SIZE.getName());
 		defaultSort = (ListPreference)findPreference(Preferences.Key.SORT_ORDER.getName());
-		syncServer = (EditTextPreference)findPreference(Preferences.Key.SYNC_SERVER.getName());
+//		syncServer = (EditTextPreference)findPreference(Preferences.Key.SYNC_SERVER.getName());
 		syncService = (ListPreference)findPreference(Preferences.Key.SYNC_SERVICE.getName());
 		sdLocation = (EditTextPreference)findPreference(Preferences.Key.SD_LOCATION.getName());
 		clearSearchHistory = (Preference)findPreference(Preferences.Key.CLEAR_SEARCH_HISTORY.getName());
@@ -150,24 +157,24 @@ public class PreferencesActivity extends ActionBarPreferenceActivity {
 		});
  		
 		// force reauthentication if the sync server changes
-		syncServer.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
-
-			public boolean onPreferenceChange(Preference preference,
-					Object serverUri) {
-				String newURL = serverUri.toString();
-				boolean retval = true;
-				
-				if ( !URLUtil.isValidUrl(newURL) || newURL.indexOf(' ') != -1 ) {
-					noValidEntry(newURL);
-					retval = false;
-				} else {
-					syncServer.setSummary(newURL);
-					reauthenticate();
-				}
-				return retval;
-			}
-			
-		});
+//		syncServer.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
+//
+//			public boolean onPreferenceChange(Preference preference,
+//					Object serverUri) {
+//				String newURL = serverUri.toString();
+//				boolean retval = true;
+//
+//				if ( !URLUtil.isValidUrl(newURL) || newURL.indexOf(' ') != -1 ) {
+//					noValidEntry(newURL);
+//					retval = false;
+//				} else {
+////					syncServer.setSummary(newURL);
+//					reauthenticate();
+//				}
+//				return retval;
+//			}
+//
+//		});
 		
 		// Change the Folder Location
 		sdLocation.setOnPreferenceChangeListener(new OnPreferenceChangeListener() {
@@ -324,11 +331,11 @@ public class PreferencesActivity extends ActionBarPreferenceActivity {
 	
 	private void setDefaults()
 	{
-		String defaultServer = (String)Preferences.Key.SYNC_SERVER.getDefault();
-		syncServer.setDefaultValue(defaultServer);
-		if(syncServer.getText() == null)
-			syncServer.setText(defaultServer);
-		syncServer.setSummary(Preferences.getString(Preferences.Key.SYNC_SERVER));
+//		String defaultServer = (String)Preferences.Key.SYNC_SERVER.getDefault();
+//		syncServer.setDefaultValue(defaultServer);
+//		if(syncServer.getText() == null)
+//			syncServer.setText(defaultServer);
+//		syncServer.setSummary(Preferences.getString(Preferences.Key.SYNC_SERVER));
 
 		String defaultService = (String)Preferences.Key.SYNC_SERVICE.getDefault();
 		syncService.setDefaultValue(defaultService);
@@ -336,7 +343,8 @@ public class PreferencesActivity extends ActionBarPreferenceActivity {
 			syncService.setValue(defaultService);
 		
 		String defaultLocation = (String)Preferences.Key.SD_LOCATION.getDefault();
-		sdLocation.setDefaultValue(defaultLocation);
+        Tomdroid.NOTES_PATH = defaultLocation;
+        sdLocation.setDefaultValue(defaultLocation);
 		if(sdLocation.getText() == null)
 			sdLocation.setText(defaultLocation);
 
@@ -357,22 +365,51 @@ public class PreferencesActivity extends ActionBarPreferenceActivity {
 			defaultSort.setSummary(getString(R.string.sortByDate));
 	}
 
-	private void setServer(String syncServiceKey) {
+    FrontiaAuthorization authorization ;
 
-		SyncManager.getInstance();
-		SyncService service = SyncManager.getService(syncServiceKey);
+    private void setServer(String syncServiceKey) {
+        Log.i("changhong", "setserver :" + syncServiceKey);
+        SyncManager.getInstance();
+        SyncService service = SyncManager.getService(syncServiceKey);
 
-		if (service == null)
-			return;
+        if (service == null)
+            return;
+        if (service.getName().equalsIgnoreCase("baidu")) {
+            authorization = Frontia.getAuthorization();
+            ArrayList<String> scope = new ArrayList<String>();
+            scope.add("basic");
+            scope.add("netdisk");
+            authorization.authorize(this, FrontiaAuthorization.MediaType.BAIDU.toString(), scope, new FrontiaAuthorizationListener.AuthorizationListener() {
 
-		syncServer.setEnabled(service.needsServer());
-		syncService.setSummary(service.getDescription());
-		backupNotes.setEnabled(!service.needsLocation()); // if not using sd card, allow backup
-		autoBackup.setEnabled(!service.needsLocation()); // if not using sd card, allow backup
-		sdLocation.setSummary(Tomdroid.NOTES_PATH);
-	}
-		
-	private void folderNotExisting(String path) {
+                @Override
+                public void onSuccess(FrontiaUser result) {
+
+                    Log.i("changhong", "auth succussfull " + result.getName());
+                    Frontia.setCurrentAccount(result);
+
+                }
+
+                @Override
+                public void onFailure(int errCode, String errMsg) {
+                    Log.i("changhong", "auth error " + errMsg);
+                }
+
+                @Override
+                public void onCancel() {
+                    Log.i("changhong", "auth canceled ");
+                }
+
+            });
+            return;
+        }
+//        syncServer.setEnabled(service.needsServer());
+        syncService.setSummary(service.getDescription());
+        backupNotes.setEnabled(!service.needsLocation()); // if not using sd card, allow backup
+        autoBackup.setEnabled(!service.needsLocation()); // if not using sd card, allow backup
+        sdLocation.setSummary(Tomdroid.NOTES_PATH);
+    }
+
+    private void folderNotExisting(String path) {
 		dialogString = String.format(getString(R.string.prefFolderCreated), path);
 		removeDialog(DIALOG_FOLDER_ERROR);
 		showDialog(DIALOG_FOLDER_ERROR);
@@ -401,8 +438,9 @@ public class PreferencesActivity extends ActionBarPreferenceActivity {
 		showDialog(DIALOG_SYNC);
 		SyncManager.getInstance().getCurrentService().deleteAllNotes();
 	}
-	
-	/**
+
+
+    /**
 	 * Housekeeping when a syncServer changes
 	 * @param syncServiceKey - key of the new sync service 
 	 */

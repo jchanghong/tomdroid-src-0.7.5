@@ -27,6 +27,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+import com.baidu.mobstat.StatService;
 import org.tomdroid.NoteManager;
 import org.tomdroid.R;
 import org.tomdroid.ui.actionbar.ActionBarListActivity;
@@ -40,6 +41,18 @@ import org.tomdroid.util.TLog;
 public class ShortcutActivity extends ActionBarListActivity {
     private final String TAG = ShortcutActivity.class.getName();
     private ListAdapter adapter;
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        StatService.onResume(this);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        StatService.onPause(this);
+    }
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {

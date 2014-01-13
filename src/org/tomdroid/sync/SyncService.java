@@ -473,7 +473,9 @@ public abstract class SyncService {
 			else
 				pushNotes(pushableNotes);
 			
-		} 
+		}
+
+
 	}
 
 	protected void deleteNotes(ArrayList<Note> notes) {
