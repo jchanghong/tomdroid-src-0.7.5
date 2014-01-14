@@ -12,13 +12,16 @@ import java.io.File;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
- * Created by changhong on 14-1-13.
- */
+* Created by changhong on 14-1-13.
+*/
 public class FileUtil {
     public static String tag = "AAAAAAAAAA";
     public static FrontiaFile mfile;
+
+    public static int synPercent = 100;
 
     static {
         mfile = new FrontiaFile();
@@ -30,112 +33,137 @@ public class FileUtil {
     }
 
     public static FrontiaStorage storage = Frontia.getStorage();
-    public static ArrayList<String> remotefile = new ArrayList<String>();
-    public static ArrayList<String> localfile = new ArrayList<String>();
+    public static ArrayList<String> remotefilestrin = new ArrayList<String>();
+    public static ArrayList<String> localfilestring = new ArrayList<String>();
 
     private static void setFile(String name) {
-        ll("in setFile");
-//        mfile.setIsDir(false);
-        mfile.setRemotePath("/path" + Frontia.getCurrentAccount().getId() + "/" + name);
-        if (Tomdroid.NOTES_PATH.endsWith("/")) {
-            mfile.setNativePath(Tomdroid.NOTES_PATH + name);
-        } else {
-
-            mfile.setNativePath(Tomdroid.NOTES_PATH + "/" + name);
-        }
-
-    }
-
-    private static void pushall() {
-        ll("pushall");
-        getlocallist();
-
-        for (String a : localfile) {
-            push(a);
-
-        }
-
-    }
-
-    private static void push(final String filename) {
-
-        setFile(filename);
-        delete(mfile);
         try {
-            Thread.sleep(500);
-        } catch (InterruptedException e) {
+            mfile.setRemotePath("/path" + Frontia.getCurrentAccount().getId() + "/" + name);
+            if (Tomdroid.NOTES_PATH.endsWith("/")) {
+                mfile.setNativePath(Tomdroid.NOTES_PATH + name);
+            } else {
+
+                mfile.setNativePath(Tomdroid.NOTES_PATH + "/" + name);
+            }
+        } catch (Exception e) {
             e.printStackTrace();
+//            Toast.makeText(Tomdroid.context, "没有登陆", Toast.LENGTH_SHORT).show();
         }
 
-        storage.uploadFile(mfile, fileProgressListener, fileTransferListener
-        );
     }
 
+    private static void push() {
 
-    private static void pushnodelete(String filename) {
-        setFile(filename);
-        storage.uploadFile(mfile, fileProgressListener, fileTransferListener
-        );
-    }
-
-    private static void delete(FrontiaFile filename) {
-        storage.deleteFile(filename, fileOperationListener);
-    }
-
-    private static void pull(String remofilename) {
-        setFile(remofilename);
-        storage.downloadFile(mfile, fileProgressListener, new FrontiaStorageListener.FileTransferListener() {
-            @Override
-            public void onSuccess(String s, String s2) {
-                ll("download " + s + ":" + s2);
-            }
-
-            @Override
-            public void onFailure(String s, int i, String s2) {
-                ll(s2);
-            }
+        for (String file : FileTime.getPushable()) {
+            setFile(file);
+            storage.uploadFile(mfile, fileProgressListener, fileTransferListener);
+            ll("pushed" + mfile.getNativePath());
         }
-        );
+
+    }
+
+    private static void pull() {
+
+        for (String file : FileTime.getPullable()) {
+
+            setFile(file);
+
+            storage.downloadFile(mfile, fileProgressListener, fileTransferListener);
+            ll("pulled" + mfile.getRemotePath());
+        }
+
+
+    }
+
+    private static void hebin() {
+        String remo;
+        String loca;
+        for (Map<String, Object> map : FileTime.getReplacelocal()) {
+            loca = (String) map.get(FileTime.LOCAL);
+            remo = (String) map.get(FileTime.REMOT);
+            delete(new File(Tomdroid.NOTES_PATH, loca));
+            setFile(remo);
+            storage.downloadFile(mfile, fileProgressListener, fileTransferListener);
+
+
+        }
+        for (Map<String, Object> map : FileTime.getReplaceremot()) {
+            loca = (String) map.get(FileTime.LOCAL);
+            remo = (String) map.get(FileTime.REMOT);
+
+            final String finalLoca = loca;
+            setFile(remo);
+            final String finalLoca1 = loca;
+            storage.deleteFile(mfile, new FrontiaStorageListener.FileOperationListener() {
+                @Override
+                public void onSuccess(String s) {
+                    setFile(finalLoca1);
+                    storage.uploadFile(mfile, fileProgressListener, fileTransferListener);
+                    ll("replse remot successful");
+
+                }
+
+                @Override
+                public void onFailure(String s, int i, String s2) {
+                    ll(s2);
+                }
+            });
+
+        }
+
+
+    }
+
+    private static void delete(File loca) {
+        if (loca.exists()) {
+            loca.delete();
+        }
     }
 
 
     private static void getlocallist() {
         if (Tomdroid.NOTES_PATH.endsWith("/")) {
             Tomdroid.NOTES_PATH = Tomdroid.NOTES_PATH.substring(0, Tomdroid.NOTES_PATH.length() - 1);
-//            ll(Tomdroid.NOTES_PATH);
 
         }
-        localfile.clear();
-
-
+        localfilestring.clear();
         File file = new File(Tomdroid.NOTES_PATH);
 
         for (String a : file.list(new NotesFilter())) {
-            localfile.add(pathtoname(a));
+
+            localfilestring.add(a);
 
         }
 
     }
-   static private class NotesFilter implements FilenameFilter {
-        public boolean accept(File dir, String name) {
+
+    static private class NotesFilter implements FilenameFilter {
+        @Override
+        public boolean accept(File pathname,String name) {
             return (name.endsWith(".note"));
         }
+
     }
+
     public static void sync() {
+        if (synPercent != 100) {
+            return;
+        }
         Runnable runnable = new Runnable() {
             @Override
             public void run() {
                 ll("in sync");
                 getlocallist();
-                remotefile.clear();
+                synPercent = 20;
+                remotefilestrin.clear();
                 storage.listFiles(new FrontiaStorageListener.FileListListener() {
                     @Override
                     public void onSuccess(List<FrontiaFile> frontiaFiles) {
                         for (FrontiaFile a : frontiaFiles) {
-                            remotefile.add(pathtoname(a.getRemotePath()));
+                            remotefilestrin.add(pathtoname(a.getRemotePath()));
                         }
-                        ll("locallist :" + localfile.size());
-                        ll("relist:" + remotefile.size());
+                        ll("locallist :" + localfilestring.size());
+                        ll("relist:" + remotefilestrin.size());
                         dosync();
                         ll("end sysc ");
 
@@ -146,33 +174,50 @@ public class FileUtil {
                         ll(s);
                     }
                 });
-
             }
         };
+
         Pool.exe(runnable);
 
     }
 
     private static void dosync() {
-        String temfile;
-        for (String a : localfile) {
-            if (remotefile.contains(a)) {
-                push(a);
 
-            } else {
-                pushnodelete(a);
+        pull();
+        push();
+        synPercent = 80;
+        hebin();
+        synPercent = 100;
+//        Pool.exe(push);
+//        Pool.exe(pull);
+//        Pool.exe(hebin);
 
-            }
-        }
-        for (String a : remotefile) {
-            if (!localfile.contains(a)) {
-                pull(a);
 
-            }
-        }
     }
 
-    private static String pathtoname(String path) {
+    private static Runnable push = new Runnable() {
+        @Override
+        public void run() {
+            push();
+        }
+    };
+
+    private static Runnable pull = new Runnable() {
+        @Override
+        public void run() {
+            pull();
+        }
+    };
+
+    private static Runnable hebin = new Runnable() {
+        @Override
+        public void run() {
+            hebin();
+        }
+    };
+
+
+    public static String pathtoname(String path) {
         int in = path.lastIndexOf("/");
         if (in == -1) {
             return path;
@@ -184,7 +229,7 @@ public class FileUtil {
     private static FrontiaStorageListener.FileOperationListener fileOperationListener = new FrontiaStorageListener.FileOperationListener() {
         @Override
         public void onSuccess(String s) {
-            ll(s + "  succuss");
+            ll(s + "     fileoper succuss");
         }
 
         @Override
@@ -201,13 +246,14 @@ public class FileUtil {
     static FrontiaStorageListener.FileTransferListener fileTransferListener = new FrontiaStorageListener.FileTransferListener() {
         @Override
         public void onSuccess(String s, String s2) {
-            ll("succuss s:" + s + "s2:" + s2);
+            ll("succuss trans:" + s + "to::" + s2);
         }
 
         @Override
         public void onFailure(String s, int i, String s2) {
-
+            ll(s2);
         }
     };
+
 
 }

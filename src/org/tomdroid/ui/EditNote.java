@@ -52,6 +52,7 @@ import org.tomdroid.R;
 import org.tomdroid.sync.SyncManager;
 import org.tomdroid.sync.sd.SdCardSyncService;
 import org.tomdroid.ui.actionbar.ActionBarActivity;
+import org.tomdroid.util.NewNote;
 import org.tomdroid.util.Preferences;
 import org.tomdroid.util.TLog;
 import org.tomdroid.xml.*;
@@ -483,7 +484,8 @@ public class EditNote extends ActionBarActivity {
 		neverSaved = false;
 
 		Toast.makeText(this, getString(R.string.messageNoteSaved), Toast.LENGTH_SHORT).show();
-		TLog.v(TAG, "note saved");
+        NewNote.updateuuid(note);
+        TLog.v(TAG, "note saved");
         SyncManager.getInstance().startSynchronization(true); // push by default
 		//showNote(false);	// redraw the note, do not show XML
 		//finish();

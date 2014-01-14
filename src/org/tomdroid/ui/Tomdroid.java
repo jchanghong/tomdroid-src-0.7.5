@@ -52,6 +52,9 @@ import android.view.ContextMenu.ContextMenuInfo;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.*;
 import com.baidu.frontia.Frontia;
+import com.baidu.frontia.FrontiaUser;
+import com.baidu.frontia.api.FrontiaAuthorization;
+import com.baidu.frontia.api.FrontiaAuthorizationListener;
 import com.baidu.mobstat.StatService;
 import org.tomdroid.Conf;
 import org.tomdroid.Note;
@@ -68,6 +71,7 @@ import org.tomdroid.xml.LinkifyPhone;
 import org.tomdroid.xml.NoteContentBuilder;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -160,7 +164,51 @@ public class Tomdroid extends ActionBarListActivity {
 	
 	private Intent intent;
 	private String query;
+    private void auth() {
+        FrontiaAuthorization authorization = Frontia.getAuthorization();
+//        authorization.clearAllAuthorizationInfos();
+//        boolean isauth = authorization.isAuthorizationReady(FrontiaAuthorization.MediaType.BAIDU.toString());
+//        if (isauth) {
+//            authorization.getUserInfo(FrontiaAuthorization.MediaType.QQFRIEND.toString(), new FrontiaAuthorizationListener.UserInfoListener() {
+//                @Override
+//                public void onSuccess(FrontiaUser.FrontiaUserDetail frontiaUserDetail) {
+//                    Frontia.setCurrentAccount(frontiaUserDetail);
+//                    System.out.println(frontiaUserDetail.getAccessToken()+"AAAAAAA");
+//                }
+//
+//                @Override
+//                public void onFailure(int i, String s) {
+//
+//                }
+//            });
+//        } else {
+        ArrayList<String> scope = new ArrayList<String>();
+        scope.add("basic");
+        scope.add("netdisk");
+        authorization.authorize(this, FrontiaAuthorization.MediaType.BAIDU.toString(), scope, new FrontiaAuthorizationListener.AuthorizationListener() {
 
+            @Override
+            public void onSuccess(FrontiaUser result) {
+
+                Log.i("changhong", "auth succussfull " + result.getName());
+                Frontia.setCurrentAccount(result);
+
+            }
+
+            @Override
+            public void onFailure(int errCode, String errMsg) {
+                Log.i("changhong", "auth error " + errMsg);
+            }
+
+            @Override
+            public void onCancel() {
+                Log.i("changhong", "auth canceled ");
+            }
+
+        });
+//        }
+
+    }
 	/** Called when the activity is created. */
 	@SuppressLint("NewApi")
 	@Override
@@ -182,14 +230,13 @@ public class Tomdroid extends ActionBarListActivity {
 		
         setContentView(main);
 		
-		// get the Path to the notes-folder from Preferences
-//        if (Preferences.getString(Preferences.Key.SD_LOCATION).startsWith("/")) {
-//        	NOTES_PATH = Preferences.getString(Preferences.Key.SD_LOCATION);
-//        } else {
-//        	NOTES_PATH = Environment.getExternalStorageDirectory()
-//				+ "/" + Preferences.getString(Preferences.Key.SD_LOCATION) + "/";
-//        }
-        NOTES_PATH = getFilesDir().getPath();
+//		get the Path to the notes-folder from Preferences
+        if (Preferences.getString(org.tomdroid.util.Preferences.Key.SD_LOCATION).startsWith("/")) {
+        	NOTES_PATH = Preferences.getString(Preferences.Key.SD_LOCATION);
+        } else {
+        	NOTES_PATH = Environment.getExternalStorageDirectory()
+				+ "/" + Preferences.getString(Preferences.Key.SD_LOCATION) + "/";
+        }
          FileUtil.ll(NOTES_PATH);
 		// generate the http header we want to send on syncing
 		getPackageManager();
@@ -269,7 +316,8 @@ public class Tomdroid extends ActionBarListActivity {
 		
 		// we already run onCreate now!
 		first_onCreate_run = false;
-	}
+        auth();
+    }
 
 	@TargetApi(11)
 	@Override

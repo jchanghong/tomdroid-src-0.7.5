@@ -22,9 +22,10 @@
  */
 package org.tomdroid.util;
 
-import org.tomdroid.Note;
-import java.util.UUID;
 import android.content.Context;
+import org.tomdroid.Note;
+
+import java.util.UUID;
 
 
 /**
@@ -45,11 +46,23 @@ public class NewNote {
 		note.setTitle(title);
 
 		UUID newid = UUID.randomUUID();
-		note.setGuid(newid.toString());
+        String uu = newid.toString() + "_" + String.valueOf(System.currentTimeMillis());
+        note.setGuid(uu);
+
+
 		note.setLastChangeDate();
 		note.setXmlContent(xmlContent);
 		
 		return note;
 	}
+
+    public static void updateuuid(Note note) {
+        String uu = note.getGuid();
+        int i = uu.lastIndexOf("_");
+        uu = uu.substring(0, i);
+        uu = uu + String.valueOf(System.currentTimeMillis());
+        note.setGuid(uu);
+
+    }
 
 }

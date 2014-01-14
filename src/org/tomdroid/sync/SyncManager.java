@@ -57,8 +57,9 @@ public class SyncManager {
 	}
 	
 	public void startSynchronization(boolean push) {
-        FileUtil.ll("in start sync" + getCurrentService().getName());
+        FileUtil.ll("in start sync sd" + getCurrentService().getName());
         service = services.get(0);
+        FileUtil.ll(service.getName());
         service.setCancelled(false);
         service.startSynchronization(push);
     }
