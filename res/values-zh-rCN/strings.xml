@@ -24,9 +24,9 @@
 <resources>
 	
 	<!-- application details -->
-	<string name="app_name">Tomdroid</string>
-	<string name="app_desc">Tomboy 兼容 wikiwiki 便笺应用。</string>
-	<string name="author">Olivier Bilodeau</string>
+	<string name="app_name">香儿笔记</string>
+	<string name="app_desc">类web笔记。</string>
+	<string name="author">蒋长宏</string>
 	
 	<!-- main.xml -->
 	<string name="strListEmptyWaiting">便笺加载中，请稍候...</string>
@@ -40,9 +40,10 @@
 	<string name="menuAbout">关于</string>
 	<!-- Title of an alert box -->
 	<string name="titleWelcome">警告</string>
-	<string name="titleAbout">关于 Tomdroid</string>
+	<string name="titleAbout">关于    香儿笔记</string>
+
 	<!-- First start alert box -->
-	<string name="strWelcome">欢迎使用 Tomdroid。\n\n请注意此软件仍在测试阶段且一定会有已知的问题。\n\n我们都知道这些问题也打算尽快修复，我也是想努力解决并尽快测试。\n\n如果您要为此做些贡献，欢迎之至。可到 launchpad.net/tomdroid 吼一下联系我们！\n</string>
+	<string name="strWelcome">欢迎使用 香儿笔记g。\n\n请注意此软件仍在测试阶段且一定会有已知的问题。\n\n我们都知道这些问题也打算尽快修复，我也是想努力解决并尽快测试。\n\n如果您发现bug。可到   发邮箱到jiangchanghong163@163.com 联系我！\n</string>
 	<!-- \n\n are linebreaks, %1$s etc are the name of the Author, the version and the license name -->
 	<string name="strAbout">%1$s\n\n作者: %2$s\n版本: %3$s\n遵照 GPLv3 许可</string>
 	
@@ -62,7 +63,7 @@
 	<string name="prefSyncService">服务</string>
 	<string name="prefSyncServer">服务器</string>
 	<string name="prefSDCard">SD 卡</string>
-	<string name="prefTomboyWeb">在线同步</string>
+	<string name="prefTomboyWeb">同步</string>
 	<string name="prefAuthenticate">认证</string>
 	<string name="prefLocation">在 SD 卡上的位置</string>
 	<string name="prefSyncOnStart">在启动时自动同步</string>
@@ -228,11 +229,11 @@
 	<!-- Checkbox in settings -->
 	<string name="prefLinkUrlsTitle">链接网址"</string>
 	<!-- Description for checkbox in settings -->
-	<string name="prefLinkUrls">例如 "www.google.com"</string>
+	<string name="prefLinkUrls">例如 "www.baidu.com"</string>
 	<!-- Checkbox in settings -->
 	<string name="prefLinkEmailsTitle">链接邮件</string>
 	<!-- Description for checkbox in settings -->
-	<string name="prefLinkEmails">如 name@address.com</string>
+	<string name="prefLinkEmails">如 183788460@qq.com</string>
 	<!-- Checkbox in settings -->
 	<string name="prefLinkPhonesTitle">链接电话号码</string>
 	<!-- Description for checkbox in settings -->
@@ -349,27 +350,29 @@
 	<string name="chooseFile">请选择以下文件之一：笔记文件（输入Tomboy笔记）或文本文件（创造新的笔记）。</string>
 
 	<!-- Title of first Note -->
-	<string name="firstNoteTitle">Tomdroid 第一个便笺</string>
+	<string name="firstNoteTitle"> 第一个笔记</string>
 	
 	<string-array name="firstNoteContent">
-		<item>欢迎使用 Tomdroid！\n</item>
-		<item>您现在还没有便笺。可在“设置”下设置同步首选项。如下描述，有两种同步选项。\n</item>
+		<item>欢迎使用   香儿笔记   ！\n</item>
+		<item>本软件最大的特点是你可以在多个笔记之间转移，就像浏览网页一样。只要你在笔记里面有另外一个笔记的名字。所以，目前，请不要用相同的标题   ！\n</item>
+		<item>您现在还没有笔记。可在“设置”下设置同步首选项。如下描述，有两种同步选项。\n</item>
 		<item>=在线同步=</item>
 		<!-- =text= makes <size:large>text</size:large> -->
-		<item>Online Synchronization is what you are looking for if you want to sync to Tomboy-Online, your own Rainy/Snowy server or any server supporting the Tomboy Web REST API.\n</item>
-		<item>要使用该功能，可在首选项里将同步服务设为在线同步，并提供一个服务器 URL。下面是部分公共服务器：</item>
+		<!--<item>Online Synchronization is what you are looking for if you want to sync to Tomboy-Online, your own Rainy/Snowy server or any server supporting the Tomboy Web REST API.\n</item>-->
+		<item>   你必须有百度账号，笔记保持到百度服务器                                                 </item>
 		<!-- -text is for list-items. --> 
-		<item>-Tomboy 网页版 - https://edge.tomboy-online.org/</item>
+		<!--<item>-Tomboy 网页版 - https://edge.tomboy-online.org/</item>-->
 		<!-- -text is for list-items. --> 
-		<item>-rainy.notesync.org - https://notesync.org:8080/[用户名]/[密码]/\n</item>
-		<item>一旦设置，点击 Tomdroid 顶部处的同步标志就可以同步您的便笺。\n</item>
+		<!--<item>-rainy.notesync.org - https://notesync.org:8080/[用户名]/[密码]/\n</item>-->
+		<!--<item>一旦设置，点击 Tomdroid 顶部处的同步标志就可以同步您的便笺。\n</item>-->
 		<item>请注意：本应用软件还在发展中，偶尔会出现问题，所以请你经常做备份。\n</item>
-		<item>为了了解你的笔记文件（*.note）保存的地方，请看看 http://live.gnome.org/Tomboy/Directories。\n</item>
+		<!--<item>为了了解你的笔记文件（*.note）保存的地方，请看看 http://live.gnome.org/Tomboy/Directories。\n</item>-->
 		<!-- =text= makes <size:large>text</size:large> --> 
 		<item>=SD 卡=</item>
-		<item>Put your Tomboy notes (*.note) on your SD Card under tomdroid/. Once the notes are copied, set Sync Service to SD Card in preferences then hit the Sync logo on Tomdroid\'s top bar.\n</item>
-		<item>Tomdroid还在寻找开发者。如果你愿意为Tomdroid做出贡献的话，请在Launchpad: http://launchpad.net/~tomdroid-dev 参加Tomdroid的开发者团队。\n</item>
-		<item>最后，如果您遇到任何问题，请将其报告至 https://bugs.launchpad.net/tomdroid</item>
+		<!--<item>Put your Tomboy notes (*.note) on your SD Card under tomdroid/. Once the notes are copied, set Sync Service to SD Card in preferences then hit the Sync logo on Tomdroid\'s top bar.\n</item>-->
+		<!--<item>Tomdroid还在寻找开发者。如果你愿意为Tomdroid做出贡献的话，请在Launchpad: http://launchpad.net/~tomdroid-dev 参加Tomdroid的开发者团队。\n</item>-->
+		<item>SD，你可以保持笔记到sd卡 你如果您遇到任何问题，请将其报告至 jiangchanghong163@163.com</item>
+		<!--<item>最后，如果您遇到任何问题，请将其报告至 jiangchanghong163@163.com</item>-->
 	</string-array>
 	
 	<!-- 
@@ -377,12 +380,12 @@
 	I\'ve put it in here so that it\'ll get translated by translators.
 	-->
 	<!-- 30 chars max -->
-	<string name="market_title">Tomdroid 笔记</string>
+	<string name="market_title"> 香儿笔记 </string>
 	<!-- 4000 chars max -->
 	<string name="market_description">A Tomboy client for Android. Tomboy is a desktop note-taking app using a wikiwiki approach and a simple user interface.\n\n* Note format compatibility with Tomboy\n* Online note synchronization with Rainy, Snowy or Tomboy Online\n* SD Card importation\n* Home screen shortcuts\n* Send and receive text or note-files from any app\n* Open source!</string>
 	
 	<!-- 80 chars max -->
-	<string name="market_promotext">兼容 Tomboy 并支持在线同步的便笺应用</string>
+	<string name="market_promotext">类web笔记   </string>
 
 	<!-- 500 chars max -->
         <string name="market_recent_changes">* Notes can now be created, edited and deleted\n* Completely redesigned for both tablets and phones\n* Sync your notes with compatible web-services or to your SD card\n* Send and receive note files or text from any app\n* More configurable than before\n* Available in even more languages\n\n And much more, for a complete list of changes please see https://launchpad.net/tomdroid/+announcements</string>
